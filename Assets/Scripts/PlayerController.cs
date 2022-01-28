@@ -2,6 +2,7 @@ using UnityEngine;
 
 [RequireComponent(typeof(PlayerMotor))]
 [RequireComponent(typeof(ConfigurableJoint))]
+[RequireComponent(typeof(Animator))]
 public class PlayerController : MonoBehaviour
 {
     [SerializeField]
@@ -25,23 +26,28 @@ public class PlayerController : MonoBehaviour
 
     private PlayerMotor playerMotor;
     private ConfigurableJoint configurableJoint;
+    private Animator animator;
 
     private void Start() {
         playerMotor = GetComponent<PlayerMotor>();
         configurableJoint = GetComponent<ConfigurableJoint>();
+        animator = GetComponent<Animator>();
         //On initialise la gravité et l'effet de rebondissement
         SetJointSettings(jointSpring);
     }
 
     private void Update() {
         //calcul de la vitesse du joueur
-        float xMove = Input.GetAxisRaw("Horizontal");
-        float yMove = Input.GetAxisRaw("Vertical");
+        float xMove = Input.GetAxis("Horizontal");
+        float yMove = Input.GetAxis("Vertical");
 
         Vector3 moveHorizontal = transform.right * xMove;
         Vector3 moveVertical = transform.forward * yMove;
 
-        Vector3 velocity = (moveHorizontal + moveVertical).normalized * speed;       
+        Vector3 velocity = (moveHorizontal + moveVertical) * speed;       
+
+        //Jouer animation jetpack
+        animator.SetFloat("ForwardVelocity", yMove);
 
         playerMotor.Move(velocity); 
 
